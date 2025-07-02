@@ -1,0 +1,22 @@
+[
+  {
+    "code": "MAT101",
+    "title": "Matemáticas I",
+    "description": "Álgebra, Cálculo y Geometría"
+  },
+  {
+    "code": "FIS101",
+    "title": "Física I",
+    "description": "Mecánica y Termodinámica"
+  },
+  {
+    "code": "INF201",
+    "title": "Programación",
+    "description": "Introducción a la programación en Python"
+  },
+  {
+    "code": "LAB202",
+    "title": "Laboratorio II",
+    "description": "Prácticas de laboratorio de segundo curso"
+  }
+]

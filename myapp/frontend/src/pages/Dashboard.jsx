@@ -20,13 +20,22 @@ export default function Dashboard() {
       <h2>Dashboard</h2>
       <button onClick={logout}>Logout</button>
       <div>
-        {subjects.map((s) => (
-          <div key={s.code} style={{ border: '1px solid #ccc', padding: '8px', margin: '8px' }}>
-            <h3>{s.code} - {s.title}</h3>
-            <p>{s.description}</p>
-            <Link to={`/subjects/${s.code}`}>View Details</Link>
-          </div>
-        ))}
+        {subjects.length === 0 ? (
+          <h2>No hay asignaturas asociadas al usuario</h2>
+        ) : (
+          subjects.map((s) => (
+            <div
+              key={s.code}
+              style={{ border: '1px solid #ccc', padding: '8px', margin: '8px' }}
+            >
+              <h3>
+                {s.code} - {s.title}
+              </h3>
+              <p>{s.description}</p>
+              <Link to={`/subjects/${s.code}`}>View Details</Link>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

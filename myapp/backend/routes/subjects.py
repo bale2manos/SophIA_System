@@ -10,7 +10,6 @@ from datetime import datetime
 def get_db():
     return current_app.config['MONGO']
 
-
 @bp.route('/subjects', methods=['GET'])
 @jwt_required()
 def list_subjects():
