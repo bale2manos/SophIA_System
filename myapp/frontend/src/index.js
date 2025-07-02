@@ -4,15 +4,38 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import SubjectDetail from './pages/SubjectDetail';
+import NewResource from './pages/NewResource';
+import PrivateRoute from './PrivateRoute';
 
 function App() {
-  const token = localStorage.getItem('token');
   return (
     <Router>
       <Routes>
         <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={token ? <Dashboard /> : <Navigate to="/login" />} />
-        <Route path="/subjects/:id" element={<SubjectDetail />} />
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/subjects/:code"
+          element={
+            <PrivateRoute>
+              <SubjectDetail />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/subjects/:code/resources/new"
+          element={
+            <PrivateRoute>
+              <NewResource />
+            </PrivateRoute>
+          }
+        />
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </Router>
