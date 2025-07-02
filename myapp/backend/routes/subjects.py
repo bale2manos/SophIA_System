@@ -26,7 +26,11 @@ def list_subjects():
     else:
         query = {}
     subjects = mongo.db.subjects.find(query)
-    data = [Subject.from_dict(s).to_dict() for s in subjects]
+    data = []
+    for s in subjects:
+        item = Subject.from_dict(s).to_dict()
+        item['id'] = str(s['_id'])
+        data.append(item)
     return jsonify(data)
 
 

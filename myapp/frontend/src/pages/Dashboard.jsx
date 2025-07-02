@@ -35,7 +35,7 @@ export default function Dashboard() {
         ) : (
           subjects.map((s) => (
             <div
-              key={s.code}
+              key={s.id}
               style={{ border: '1px solid #ccc', padding: '8px', margin: '8px' }}
             >
               <h3>
