@@ -33,7 +33,7 @@ export default function SubjectDetail() {
   if (!subject) return <div>Loading...</div>;
 
   return (
-    <div key={code}>    {/* <- explicit key forces clean mount */}
+    <div>
       {/* Back button */}
       <button
         onClick={() => navigate('/dashboard')}

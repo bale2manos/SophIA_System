@@ -26,8 +26,7 @@ export default function Dashboard() {
   }, []);
 
   return (
-    // keying on location.key forces React to remount this whole tree cleanly
-    <div key={location.key}>
+    <div>
       <h2>Dashboard</h2>
       <button onClick={logout}>Logout</button>
       <div>
