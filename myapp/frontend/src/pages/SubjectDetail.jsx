@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import api from '../api';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
@@ -8,12 +8,24 @@ export default function SubjectDetail() {
   const { code } = useParams();
   const [subject, setSubject] = useState(null);
   const [resources, setResources] = useState([]);
+  const navigate = useNavigate();
   
   useEffect(() => {
+    let isMounted = true;
+
     fetch(`/api/subjects/${code}`)
       .then((res) => res.json())
-      .then(setSubject);
-    api.get(`/subjects/${code}/resources`).then((res) => setResources(res.data));
+      .then((data) => isMounted && setSubject(data))
+      .catch(() => {});
+
+    api
+      .get(`/subjects/${code}/resources`)
+      .then((res) => isMounted && setResources(res.data))
+      .catch(() => {});
+
+    return () => {
+      isMounted = false;
+    };
   }, [code]);
 
   const role = localStorage.getItem('role');
@@ -21,7 +33,14 @@ export default function SubjectDetail() {
   if (!subject) return <div>Loading...</div>;
 
   return (
-    <div>
+    <div key={code}>    {/* <- explicit key forces clean mount */}
+      {/* Back button */}
+      <button
+        onClick={() => navigate('/dashboard')}
+        style={{ marginBottom: '16px' }}
+      >
+        ← Back to Dashboard
+      </button>
       <h2>{subject.code} - {subject.title}</h2>
       <p>{subject.description}</p>
       <div style={{ width: 80 }}>

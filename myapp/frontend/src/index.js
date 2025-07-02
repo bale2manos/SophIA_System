@@ -1,6 +1,14 @@
+// src/index.js
+
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+
+// ——— CSS Imports ———
+import './index.css';                                      // Tailwind base/styles
+import 'react-circular-progressbar/dist/styles.css';       // CircularProgressbar styles
+
+// ——— App Imports ———
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import SubjectDetail from './pages/SubjectDetail';
@@ -12,6 +20,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/login" element={<Login />} />
+
         <Route
           path="/dashboard"
           element={
@@ -20,6 +29,7 @@ function App() {
             </PrivateRoute>
           }
         />
+
         <Route
           path="/subjects/:code"
           element={
@@ -28,6 +38,7 @@ function App() {
             </PrivateRoute>
           }
         />
+
         <Route
           path="/subjects/:code/resources/new"
           element={
@@ -36,7 +47,8 @@ function App() {
             </PrivateRoute>
           }
         />
-        <Route path="*" element={<Navigate to="/login" />} />
+
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </Router>
   );

@@ -1,22 +1,33 @@
+// src/pages/Dashboard.jsx
+
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import api from '../api';
 
 export default function Dashboard() {
   const [subjects, setSubjects] = useState([]);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const logout = () => {
     localStorage.clear();
-    navigate('/login');
+    // use replace so this route doesn’t stay in history
+    navigate('/login', { replace: true });
   };
 
   useEffect(() => {
-    api.get('/subjects').then((res) => setSubjects(res.data));
+    let isMounted = true;
+    api.get('/subjects').then((res) => {
+      if (isMounted) setSubjects(res.data);
+    });
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   return (
-    <div>
+    // keying on location.key forces React to remount this whole tree cleanly
+    <div key={location.key}>
       <h2>Dashboard</h2>
       <button onClick={logout}>Logout</button>
       <div>
