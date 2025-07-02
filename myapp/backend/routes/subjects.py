@@ -9,12 +9,20 @@ from flask import current_app
 def get_db():
     return current_app.config['MONGO']
 
-@bp.route('/subjects', methods=['GET'])
-def list_subjects():
+@bp.route("/subjects", methods=["GET"])
+def get_subjects():
+    fake_email = "maria@uc3m.es"  # simula el usuario logueado
     mongo = get_db()
-    subjects = mongo.db.subjects.find()
-    data = [Subject.from_dict(s).to_dict() | {'_id': str(s['_id'])} for s in subjects]
-    return jsonify(data)
+    user = mongo.db.users.find_one({"email": fake_email})
+    if not user:
+        return jsonify([])  # no hay asignaturas
+
+    codes = user.get("subject_codes", [])
+    subjects = list(mongo.db.subjects.find({"code": {"$in": codes}}))
+    for subj in subjects:
+        subj["_id"] = str(subj["_id"])
+    return jsonify(subjects)
+
 
 @bp.route('/subjects/<subject_id>', methods=['GET'])
 def get_subject(subject_id):
