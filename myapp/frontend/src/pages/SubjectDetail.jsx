@@ -36,7 +36,7 @@ export default function SubjectDetail() {
     <div>
       {/* Back button */}
       <button
-        onClick={() => navigate('/dashboard')}
+        onClick={() => navigate('/dashboard', { replace: true })}
         style={{ marginBottom: '16px' }}
       >
         ← Back to Dashboard
