@@ -1,10 +1,12 @@
 from flask import Flask
 from flask_cors import CORS
 from flask_pymongo import PyMongo
+from flask_jwt_extended import JWTManager
 from .config import Config
 from .routes import bp as api_bp
 
 mongo = PyMongo()
+jwt = JWTManager()
 
 
 def create_app():
@@ -12,6 +14,7 @@ def create_app():
     app.config.from_object(Config)
     CORS(app)
     mongo.init_app(app)
+    jwt.init_app(app)
     app.config['MONGO'] = mongo
     app.register_blueprint(api_bp, url_prefix='/api')
     return app

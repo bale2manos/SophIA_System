@@ -1,11 +1,33 @@
 from flask import request, jsonify
+from flask_jwt_extended import create_access_token
 from . import bp
+from flask import current_app
+import bcrypt
+
+
+def get_db():
+    return current_app.config['MONGO']
+
 
 @bp.route('/login', methods=['POST'])
 def login():
-    data = request.get_json()
-    username = data.get('username')
-    password = data.get('password')
-    # TODO: validate username and password
-    token = 'fake-token-for-' + username
-    return jsonify({'token': token})
+    data = request.get_json() or {}
+    email = data.get('email')
+    password = data.get('password', '')
+    if not email or not password:
+        return jsonify({'error': 'Missing credentials'}), 400
+
+    mongo = get_db()
+    user = mongo.db.users.find_one({'email': email})
+    if not user or not bcrypt.checkpw(password.encode(), user['password_hash']):
+        return jsonify({'error': 'Invalid credentials'}), 401
+
+    access_token = create_access_token(identity=email, additional_claims={
+        'role': user.get('role'),
+        'name': user.get('name')
+    })
+    return jsonify({
+        'access_token': access_token,
+        'role': user.get('role'),
+        'name': user.get('name')
+    })
