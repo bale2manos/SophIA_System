@@ -12,16 +12,26 @@ export default function NewResource() {
 
 const handleSubmit = async (e) => {
   e.preventDefault();
-  // Convertir la fecha a ISO o enviar null
+  // convierte dueDate a ISO y cambia 'Z' por '+00:00'
+  const iso = new Date(dueDate).toISOString();
+  const dueIsoWithOffset = iso.slice(0, -1) + '+00:00';
+
   const payload = {
     title,
     type,
     description,
-    due_date: dueDate ? new Date(dueDate).toISOString() : null,
+    due_date: dueDate ? dueIsoWithOffset : null,
   };
-  await api.post(`/subjects/${code}/resources`, payload);
-  navigate(-1);
+
+  try {
+    await api.post(`/subjects/${code}/resources`, payload);
+    navigate(-1);
+  } catch (err) {
+    console.error(err);
+    alert('Error creating resource');
+  }
 };
+
 
   return (
     <form onSubmit={handleSubmit}>

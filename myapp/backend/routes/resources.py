@@ -5,7 +5,7 @@ from . import bp
 from flask import current_app
 from werkzeug.utils import secure_filename
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from dateutil import parser
 
 
@@ -68,6 +68,8 @@ def delete_resource(rid):
 @bp.route('/resources/<rid>/submit', methods=['POST'])
 @jwt_required()
 def submit_file(rid):
+    """Allow students to upload an exercise file"""
+    # Check student role
     err = _student_required()
     if err:
         return err
@@ -77,45 +79,59 @@ def submit_file(rid):
     if not resource:
         return jsonify({'error': 'Resource not found'}), 404
 
-    # —————— NORMALIZA due_date desde DB ——————
+    # Normalize and compare due_date as aware datetimes
     due = resource.get('due_date')
     if due:
-        # si fuese string (por migración), lo parseamos
+        # If still a string, parse it
         if isinstance(due, str):
             try:
                 due = parser.isoparse(due)
             except Exception:
                 return jsonify({'error': 'Invalid due_date in database'}), 500
-        # ahora es un datetime: comparamos
-        if datetime.utcnow() > due:
+        # Current time in UTC (aware)
+        now = datetime.now(timezone.utc)
+        # If due is naive, assign UTC
+        if due.tzinfo is None:
+            due = due.replace(tzinfo=timezone.utc)
+        # If past due, reject
+        if now > due:
             return jsonify({'error': 'Past due date'}), 400
-    # ————————————————————————————————————————————
 
+    # Retrieve file from form
     file = request.files.get('file')
     if not file:
         return jsonify({'error': 'No file provided'}), 400
 
+    # Build path: UPLOAD_FOLDER/{resource_id}/{student_email}/filename
     email = get_jwt_identity()
-    base = os.path.join(current_app.config['UPLOAD_FOLDER'], rid, email)
-    os.makedirs(base, exist_ok=True)
+    base_dir = os.path.join(current_app.config['UPLOAD_FOLDER'], rid, email)
+    os.makedirs(base_dir, exist_ok=True)
     filename = secure_filename(file.filename)
-    relative = os.path.join(rid, email, filename)
-    filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], relative)
-    file.save(filepath)
+    relative_path = os.path.join(rid, email, filename)
+    full_path = os.path.join(current_app.config['UPLOAD_FOLDER'], relative_path)
+    file.save(full_path)
 
-    data = {
+    # Prepare submission record
+    submission_data = {
         'resource_id': ObjectId(rid),
         'student_email': email,
-        'file_path': relative,
-        'submitted_at': datetime.utcnow(),
+        'file_path': relative_path,
+        'submitted_at': datetime.now(timezone.utc),
     }
-    existing = mongo.db.submissions.find_one({'resource_id': ObjectId(rid), 'student_email': email})
+    existing = mongo.db.submissions.find_one({
+        'resource_id': ObjectId(rid),
+        'student_email': email
+    })
     if existing:
-        mongo.db.submissions.update_one({'_id': existing['_id']}, {'$set': data})
+        mongo.db.submissions.update_one(
+            {'_id': existing['_id']},
+            {'$set': submission_data}
+        )
     else:
-        data['grade'] = None
-        mongo.db.submissions.insert_one(data)
-    return jsonify({'message': 'Submitted successfully'})
+        submission_data['grade'] = None
+        mongo.db.submissions.insert_one(submission_data)
+
+    return jsonify({'message': 'Submitted successfully'}), 200
 
 
 @bp.route('/resources/<rid>/submissions', methods=['GET'])
