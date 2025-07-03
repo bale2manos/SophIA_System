@@ -4,7 +4,7 @@ import api from '../api';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 
-function UploadButton({ resourceId }) {
+function UploadButton({ resourceId, label = 'Submit', disabled = false }) {
   const inputRef = useRef();
   const handleUpload = (e) => {
     const file = e.target.files[0];
@@ -18,8 +18,12 @@ function UploadButton({ resourceId }) {
   };
   return (
     <>
-      <button onClick={() => inputRef.current && inputRef.current.click()} style={{ marginLeft: '8px' }}>
-        Submit
+      <button
+        disabled={disabled}
+        onClick={() => !disabled && inputRef.current && inputRef.current.click()}
+        style={{ marginLeft: '8px' }}
+      >
+        {label}
       </button>
       <input type="file" ref={inputRef} onChange={handleUpload} style={{ display: 'none' }} />
     </>
@@ -72,20 +76,49 @@ export default function SubjectDetail() {
       <ul>
         {resources.map((r) => {
           const showDue = r.due_date ? ` (Due: ${new Date(r.due_date).toLocaleDateString()})` : '';
+          const duePassed = r.due_date && new Date() > new Date(r.due_date);
+          const submission = r.submissions && r.submissions[0];
           return (
             <li key={r.id} style={{ marginBottom: '8px' }}>
               {r.title} ({r.type}){showDue}
+              {role === 'professor' && r.type === 'practice' && (
+                <button onClick={() => alert('TODO')} style={{ marginLeft: '8px' }}>
+                  Edit
+                </button>
+              )}
               {role === 'student' && r.type === 'exercise' && (
-                <UploadButton resourceId={r.id} />
+                <>
+                  {submission && (
+                    <div>
+                      📎 {submission.file_path.split(/[/\\]/).pop()}
+                      {submission.grade != null && <span> - {submission.grade}</span>}
+                    </div>
+                  )}
+                  <UploadButton
+                    resourceId={r.id}
+                    label={submission ? 'Edit delivery' : 'Submit'}
+                    disabled={duePassed}
+                  />
+                  {duePassed && <span style={{ marginLeft: '8px' }}>Past due date</span>}
+                </>
               )}
               {role === 'student' && r.type === 'practice' && (
-                <button onClick={() => alert('TODO')} style={{ marginLeft: '8px' }}>
-                  Start
-                </button>
+                <>
+                  <button
+                    disabled={duePassed}
+                    onClick={() => alert('TODO')}
+                    style={{ marginLeft: '8px' }}
+                  >
+                    Start
+                  </button>
+                  {duePassed && <span style={{ marginLeft: '8px' }}>Past due date</span>}
+                </>
               )}
               {role === 'professor' && r.type === 'exercise' && (
                 <button
-                  onClick={() => navigate(`/resources/${r.id}/review`)}
+                  onClick={() =>
+                    navigate(`/resources/${r.id}/review`, { state: { code } })
+                  }
                   style={{ marginLeft: '8px' }}
                 >
                   Revisar
