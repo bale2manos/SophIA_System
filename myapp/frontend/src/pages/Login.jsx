@@ -21,13 +21,14 @@ export default function Login() {
       localStorage.setItem('name', res.data.name);
       navigate('/dashboard');
     } catch (err) {
+      console.error(err);
       alert('Login failed');
     }
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <h2>Login</h2>
+      <h2>Login2</h2>
       <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
       <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
       <button type="submit">Login</button>

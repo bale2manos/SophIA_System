@@ -2,8 +2,8 @@ from flask import Flask, send_from_directory
 from flask_cors import CORS
 from flask_pymongo import PyMongo
 from flask_jwt_extended import JWTManager
-from .config import Config
-from .routes import bp as api_bp
+from config import Config
+from routes import bp as api_bp
 import os
 
 mongo = PyMongo()
