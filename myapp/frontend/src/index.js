@@ -14,6 +14,7 @@ import Dashboard from './pages/Dashboard';
 import SubjectDetail from './pages/SubjectDetail';
 import NewResource from './pages/NewResource';
 import PrivateRoute from './PrivateRoute';
+import ReviewSubmissions from './pages/ReviewSubmissions';
 
 function App() {
   return (
@@ -44,6 +45,15 @@ function App() {
           element={
             <PrivateRoute>
               <NewResource />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/resources/:id/review"
+          element={
+            <PrivateRoute>
+              <ReviewSubmissions />
             </PrivateRoute>
           }
         />
