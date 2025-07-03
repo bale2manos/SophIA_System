@@ -52,7 +52,7 @@ module.exports = {
   devServer: {
     static: path.join(__dirname, 'public'),
     historyApiFallback: true,
-    proxy: { '/api': 'http://backend:5000' },
+    proxy: { '/api': 'http://localhost:5000' },
     port: 3000,
   },
 };

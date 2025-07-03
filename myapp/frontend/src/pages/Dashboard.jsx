@@ -27,7 +27,7 @@ export default function Dashboard() {
 
   return (
     <div>
-      <h2>Dashboard2</h2>
+      <h2>Dashboard</h2>
       <button onClick={logout}>Logout</button>
       <div>
         {subjects.length === 0 ? (

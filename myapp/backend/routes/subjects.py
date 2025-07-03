@@ -47,12 +47,19 @@ def get_subject(code):
 @jwt_required()
 def list_resources(code):
     mongo = get_db()
-    resources = mongo.db.resources.find({'subject_code': code})
+    resources = mongo.db.resources.find(
+        {'subject_code': code},
+        {'_id': 1, 'title': 1, 'type': 1, 'due_date': 1}
+    )    
     data = []
     for r in resources:
-        r['id'] = str(r['_id'])
-        del r['_id']
-        data.append(r)
+        data.append({
+            'id': str(r['_id']),
+            'title': r['title'],
+            'type': r['type'],
+            'due_date': r.get('due_date'),
+        })
+
     return jsonify(data)
 
 

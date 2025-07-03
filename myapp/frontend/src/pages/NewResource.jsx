@@ -10,16 +10,18 @@ export default function NewResource() {
   const [description, setDescription] = useState('');
   const [dueDate, setDueDate] = useState('');
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    await api.post(`/subjects/${code}/resources`, {
-      title,
-      type,
-      description,
-      due_date: dueDate || null,
-    });
-    navigate(-1);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  // Convertir la fecha a ISO o enviar null
+  const payload = {
+    title,
+    type,
+    description,
+    due_date: dueDate ? new Date(dueDate).toISOString() : null,
   };
+  await api.post(`/subjects/${code}/resources`, payload);
+  navigate(-1);
+};
 
   return (
     <form onSubmit={handleSubmit}>
@@ -31,7 +33,12 @@ export default function NewResource() {
         <option value="exercise">exercise</option>
       </select>
       <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description" />
-      <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
+      <input
+        type="date"
+        value={dueDate}
+        onChange={(e) => setDueDate(e.target.value)}
+        className="w-full border p-2 rounded"
+      />
       <button type="submit">Create</button>
     </form>
   );

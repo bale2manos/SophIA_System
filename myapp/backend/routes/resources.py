@@ -6,6 +6,7 @@ from flask import current_app
 from werkzeug.utils import secure_filename
 import os
 from datetime import datetime
+from dateutil import parser
 
 
 def get_db():
@@ -32,7 +33,21 @@ def update_resource(rid):
     err = _professor_required()
     if err:
         return err
+
     data = request.get_json() or {}
+
+    # —————— PARSEO de due_date ——————
+    if 'due_date' in data:
+        if data['due_date']:
+            try:
+                data['due_date'] = parser.isoparse(data['due_date'])
+            except Exception:
+                return jsonify({'error': 'Invalid due_date format'}), 400
+        else:
+            data['due_date'] = None
+    # ————————————————————————————
+
+    # Solo actualizamos los campos permitidos
     update = {k: data[k] for k in ['title', 'type', 'description', 'due_date'] if k in data}
     mongo = get_db()
     mongo.db.resources.update_one({'_id': ObjectId(rid)}, {'$set': update})
@@ -53,17 +68,29 @@ def delete_resource(rid):
 @bp.route('/resources/<rid>/submit', methods=['POST'])
 @jwt_required()
 def submit_file(rid):
-    """Allow students to upload an exercise file"""
     err = _student_required()
     if err:
         return err
+
     mongo = get_db()
     resource = mongo.db.resources.find_one({'_id': ObjectId(rid)})
     if not resource:
         return jsonify({'error': 'Resource not found'}), 404
+
+    # —————— NORMALIZA due_date desde DB ——————
     due = resource.get('due_date')
-    if due and datetime.utcnow() > due:
-        return jsonify({'error': 'Past due date'}), 400
+    if due:
+        # si fuese string (por migración), lo parseamos
+        if isinstance(due, str):
+            try:
+                due = parser.isoparse(due)
+            except Exception:
+                return jsonify({'error': 'Invalid due_date in database'}), 500
+        # ahora es un datetime: comparamos
+        if datetime.utcnow() > due:
+            return jsonify({'error': 'Past due date'}), 400
+    # ————————————————————————————————————————————
+
     file = request.files.get('file')
     if not file:
         return jsonify({'error': 'No file provided'}), 400
