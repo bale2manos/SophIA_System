@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import api from '../api';
 
 export default function ReviewSubmissions() {
-  const { id, code } = useParams();
+  const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const code = location.state?.code;
   const [subs, setSubs] = useState([]);
 
   useEffect(() => {
@@ -26,7 +28,12 @@ export default function ReviewSubmissions() {
 
   return (
     <div>
-      <button onClick={() => navigate(`/subjects/${code}`)} style={{ marginBottom: '16px' }}>
+      <button
+        onClick={() =>
+          code ? navigate(`/subjects/${code}`) : navigate(-1)
+        }
+        style={{ marginBottom: '16px' }}
+      >
         ← Volver a Asignatura
       </button>
       <h2>Submissions</h2>
@@ -46,8 +53,14 @@ export default function ReviewSubmissions() {
               <tr key={s.id}>
                 <td>{s.name}</td>
                 <td>
-                  {s.file_url.split('/').pop()}{' '}
-                  <a href={s.file_url} download style={{ marginLeft: '4px' }}>
+                  {s.file_url.split(/[/\\]/).pop()}{' '}
+                  <a
+                    href={`${api.defaults.baseURL.replace(/\/api$/, '')}${s.file_url}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    download
+                    style={{ marginLeft: '4px' }}
+                  >
                     ⬇️
                   </a>
                 </td>

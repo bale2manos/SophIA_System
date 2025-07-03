@@ -90,7 +90,7 @@ export default function SubjectDetail() {
                 <>
                   {submission && (
                     <div>
-                      📎 {submission.file_path.split('/').pop()}
+                      📎 {submission.file_path.split(/[/\\]/).pop()}
                       {submission.grade != null && <span> - {submission.grade}</span>}
                     </div>
                   )}
@@ -116,7 +116,9 @@ export default function SubjectDetail() {
               )}
               {role === 'professor' && r.type === 'exercise' && (
                 <button
-                  onClick={() => navigate(`/resources/${r.id}/review`)}
+                  onClick={() =>
+                    navigate(`/resources/${r.id}/review`, { state: { code } })
+                  }
                   style={{ marginLeft: '8px' }}
                 >
                   Revisar
