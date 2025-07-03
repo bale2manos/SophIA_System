@@ -21,14 +21,16 @@ db.users.insert_many([
         'name': 'Ana',
         'role': 'professor',
         'password_hash': prof_hash,
-        'subject_codes': ['CS101', 'MA101']
+        'subject_codes': ['CS101', 'MA101'],
+        'nip': 'P00000001'
     },
     {
         'email': 'maria@uc3m.es',
         'name': 'Maria',
         'role': 'student',
         'password_hash': student_hash,
-        'subject_codes': ['CS101']
+        'subject_codes': ['CS101'],
+        'nia': '100000001'
     }
 ])
 
