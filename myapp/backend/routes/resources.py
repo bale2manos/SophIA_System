@@ -167,3 +167,74 @@ def grade_submission(sid):
     grade = data.get('grade')
     mongo.db.submissions.update_one({'_id': ObjectId(sid)}, {'$set': {'grade': grade}})
     return jsonify({'success': True})
+
+@bp.route('/resources/<rid>/submission', methods=['GET'])
+@jwt_required()
+def get_my_submission(rid):
+    """
+    Devuelve la submission de recurso <rid> correspondiente
+    al alumno logueado (su único registro).
+    """
+    mongo = get_db()
+    # 1) Identidad del alumno (su email, según tu token)
+    student_email = get_jwt_identity()
+
+    # 2) Busca sólo su entrega en Mongo
+    sub = mongo.db.submissions.find_one({
+        'resource_id': ObjectId(rid),
+        'student_email': student_email
+    })
+
+    # 3) Si no la tiene, devolvemos 404 o un array vacío
+    if not sub:
+        return jsonify({}), 404
+
+    # 4) Formatea igual que en list_submissions
+    return jsonify({
+        'id': str(sub['_id']),
+        'student_email': sub['student_email'],
+        'name': sub.get('name', sub['student_email']),
+        'file_url': '/uploads/' + sub['file_path'],
+        'grade': sub.get('grade')
+    })
+    
+    
+@bp.route('/submissions/<sid>', methods=['DELETE'])
+@jwt_required()
+def delete_submission(sid):
+    """
+    Borra la submission con id <sid>. 
+    - Si es el profesor, puede borrar cualquier entrega.
+    - Si es el alumno, sólo puede borrar SU entrega.
+    """
+    mongo = get_db()
+    # 1) Busca la entrega en la BBDD
+    sub = mongo.db.submissions.find_one({'_id': ObjectId(sid)})
+    if not sub:
+        return jsonify({'msg': 'Submission not found'}), 404
+
+    # 2) Comprueba permisos
+    user_email = get_jwt_identity()
+    # Si no es profesor y no es su propia entrega, deniega
+    try:
+        # _professor_required() devuelve un Response si falla o None si todo OK
+        err = _professor_required()  
+        is_prof = err is None  
+    except Exception:
+        is_prof = False
+
+    if not is_prof and sub.get('student_email') != user_email:
+        return jsonify({'msg': 'Forbidden'}), 403
+
+    # 3) Borra el documento de la colección
+    mongo.db.submissions.delete_one({'_id': ObjectId(sid)})
+
+    """
+    # 4) (Opcional) Borra también el fichero del sistema de ficheros
+    path = os.path.join(current_app.config['UPLOAD_FOLDER'], sub['file_path'])
+    if os.path.exists(path):
+        os.remove(path)
+    """
+
+    # 5) Devuelve éxito
+    return jsonify({'msg': 'Submission deleted'}), 200
