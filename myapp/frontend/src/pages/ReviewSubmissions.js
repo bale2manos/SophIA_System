@@ -1,7 +1,8 @@
 // src/pages/ReviewSubmissions.jsx
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import api from '../api';
+import api, { BACKEND_URL } from '../api';
+
 
 export default function ReviewSubmissions() {
   const { id } = useParams();
@@ -77,7 +78,7 @@ export default function ReviewSubmissions() {
                 <td className="border px-2 py-1">
                   {fileName}{' '}
                   <a
-                    href={`${import.meta.env.VITE_API_URL}${s.file_url}`}
+                    href={`${BACKEND_URL}${s.file_url}`}
                     download
                     className="text-blue-600 hover:underline ml-1"
                   >
