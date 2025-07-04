@@ -61,7 +61,7 @@ export default function ReviewSubmissions() {
                 <td className="border px-2 py-1">
                   {fileName}{' '}
                   <a
-                    href={s.file_url}
+                    href={`${import.meta.env.VITE_API_URL}${s.file_url}`}
                     download
                     className="text-blue-600 hover:underline ml-1"
                   >
