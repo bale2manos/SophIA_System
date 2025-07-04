@@ -68,31 +68,42 @@ export default function ReviewSubmissions() {
         <tbody>
           {subs.map((s, i) => {
             const modified = s.grade !== s.originalGrade;
-            const fileName = s.file_url.split('/').pop();
+            // Solo consideramos inválido si hay algo escrito Y está fuera de [0,10]
+            const isInvalid =
+              s.grade !== '' && (s.grade < 0 || s.grade > 10);
+            const fileName = s.file_url.split(/[/\\]/).pop();
+
             return (
-              <tr key={s.id}>
-                {/* 2) Name column */}
+              <tr key={s.id} className={isInvalid ? 'bg-red-100' : ''}>
+                {/* Name */}
                 <td className="border px-2 py-1">{s.name}</td>
 
-                {/* 3) File column with download */}
+                {/* File */}
                 <td className="border px-2 py-1">
                   {fileName}{' '}
                   <a
                     href={`${BACKEND_URL}${s.file_url}`}
-                    download
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="text-blue-600 hover:underline ml-1"
                   >
                     ⬇️
                   </a>
                 </td>
 
-                {/* 4) Grade input */}
+                {/* Grade con validación */}
                 <td className="border px-2 py-1">
                   <input
                     type="number"
+                    min="0"
+                    max="10"
+                    step="0.1"
                     value={s.grade ?? ''}
                     onChange={(e) => {
-                      const val = e.target.value;
+                      let val = parseFloat(e.target.value);
+                      if (isNaN(val)) val = '';
+                      else if (val < 0) val = 0;
+                      else if (val > 10) val = 10;
                       setSubs((prev) => {
                         const copy = [...prev];
                         copy[i] = { ...copy[i], grade: val };
@@ -101,15 +112,20 @@ export default function ReviewSubmissions() {
                     }}
                     className="w-16 border p-1 rounded"
                   />
+                  {isInvalid && (
+                    <div className="text-red-600 text-sm mt-1">
+                      La nota debe estar entre 0 y 10
+                    </div>
+                  )}
                 </td>
 
-                {/* 5) Save button */}
+                {/* Botón Guardar */}
                 <td className="border px-2 py-1 text-center">
                   <button
                     onClick={() => updateGrade(s.id, s.grade, i)}
-                    disabled={!modified}
+                    disabled={!modified || isInvalid}
                     className={`px-2 py-1 rounded ${
-                      modified
+                      modified && !isInvalid
                         ? 'bg-green-500 text-white hover:bg-green-600'
                         : 'bg-gray-200 text-gray-500 cursor-not-allowed'
                     }`}
@@ -121,6 +137,8 @@ export default function ReviewSubmissions() {
             );
           })}
         </tbody>
+
+
       </table>
     </div>
   );
