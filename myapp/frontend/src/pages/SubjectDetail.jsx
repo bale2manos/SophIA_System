@@ -117,7 +117,10 @@ export default function SubjectDetail() {
               {role === 'professor' && r.type === 'exercise' && (
                 <button
                   onClick={() =>
-                    navigate(`/resources/${r.id}/review`, { state: { code } })
+                    navigate(
+                      `/resources/${r.id}/review`,
+                      { state: { code: subject.code, title: subject.title } }
+                    )
                   }
                   style={{ marginLeft: '8px' }}
                 >
