@@ -1,12 +1,29 @@
 // src/pages/ReviewSubmissions.jsx
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import api, { BACKEND_URL } from '../api';
 
+
 export default function ReviewSubmissions() {
-  const { code, id } = useParams();
+  const { id } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
+
+  // Si vienen por estado, úsalos; si no, haz fallback con params o fetch
+  const code = location.state?.code;
+  const titleFromState = location.state?.title;
+
+  const [subjectTitle, setSubjectTitle] = useState(titleFromState || '');
+
   const [subs, setSubs] = useState([]);
+
+  useEffect(() => {
+    if (!titleFromState && code) {
+      api.get(`/subjects/${code}`).then((res) => {
+        setSubjectTitle(res.data.title);
+      });
+    }
+  }, [code, titleFromState]);
 
   // Fetch submissions and remember original grades
   useEffect(() => {
@@ -34,7 +51,7 @@ export default function ReviewSubmissions() {
         onClick={() => navigate(`/subjects/${code}`)}
         className="mb-4 px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
       >
-        ← Volver a Asignatura
+        ← Volver a {subjectTitle}
       </button>
 
       <h2 className="text-2xl mb-2">Revisar Entregas</h2>
