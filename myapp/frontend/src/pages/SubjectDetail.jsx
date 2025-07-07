@@ -19,22 +19,26 @@ export default function SubjectDetail() {
       // 1) Trae la lista de recursos
       const { data: rawResources } = await api.get(`/subjects/${code}/resources`);
 
-      // 2) Para cada recurso, intenta traer solo MI submission
+      const role = localStorage.getItem('role');
+
+      // 2) Para cada recurso, si soy alumno, intenta traer solo MI submission
       const resourcesWithSubs = await Promise.all(
         rawResources.map(async (r) => {
           let submissions = [];
-          try {
-            // Llama al endpoint que devuelve solo mi entrega
-            const res = await api.get(`/resources/${r.id}/submission`);
-            if (res.data) {
-              // Lo metemos en array para compatibilizar con la UI
-              submissions = [res.data];
+          if (role === 'student') {
+            try {
+              // Llama al endpoint que devuelve solo mi entrega
+              const res = await api.get(`/resources/${r.id}/submission`);
+              if (res.data) {
+                // Lo metemos en array para compatibilizar con la UI
+                submissions = [res.data];
+              }
+            } catch (e) {
+              console.warn(`No se pudieron cargar las submissions de resource ${r.id}:`, e);
+              // submissions sigue siendo []
             }
-          } catch (e) {
-            console.warn(`No se pudieron cargar las submissions de resource ${r.id}:`, e);
-            // submissions sigue siendo []
+            console.log(`Submissions for resource ${r.id}:`, submissions);
           }
-          console.log(`Submissions for resource ${r.id}:`, submissions);
           return { ...r, submissions };
         })
       );
@@ -98,10 +102,20 @@ export default function SubjectDetail() {
           const showDue = r.due_date
             ? ` (Due: ${new Date(r.due_date).toLocaleString()})`
             : '';
+          const showCounts =
+            role === 'professor' && r.type === 'exercise' && r.submissions_count != null;
           return (
             <li key={r.id} style={{ marginBottom: '8px' }}>
               <Link to={`/resources/${r.id}`}>{r.title} ({r.type})</Link>
               {showDue}
+              {showCounts && (
+                <>
+                  {' '}- {r.submissions_count} submissions
+                  {r.has_ungraded && (
+                    <span className="text-red-600 ml-1">⚠️ entregas sin corregir</span>
+                  )}
+                </>
+              )}
             </li>
           );
         })}
