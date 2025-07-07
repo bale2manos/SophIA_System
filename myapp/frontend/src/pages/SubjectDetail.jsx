@@ -151,23 +151,24 @@ if (role === 'student' && r.type === 'exercise') {
         </span>
 
         {currentSubmission ? (
-          <>
-            <UploadButton
-              resourceId={r.id}
-              label="Edit Delivery"
-              disabled={duePassed}
-              onUploaded={fetchResources}
-            />
-            <button
-              onClick={async () => {
-                await api.delete(`/submissions/${currentSubmission.id}`);
-                fetchResources();
-              }}
-              className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-            >
-              Remove Submission
-            </button>
-          </>
+          !duePassed && (
+            <>
+              <UploadButton
+                resourceId={r.id}
+                label="Edit Delivery"
+                onUploaded={fetchResources}
+              />
+              <button
+                onClick={async () => {
+                  await api.delete(`/submissions/${currentSubmission.id}`);
+                  fetchResources();
+                }}
+                className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+              >
+                Remove Submission
+              </button>
+            </>
+          )
         ) : (
           <UploadButton
             resourceId={r.id}
