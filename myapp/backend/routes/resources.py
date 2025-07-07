@@ -27,6 +27,26 @@ def _student_required():
     return None
 
 
+@bp.route('/resources/<rid>', methods=['GET'])
+@jwt_required()
+def get_resource(rid):
+    """Return full information about a resource"""
+    mongo = get_db()
+    res = mongo.db.resources.find_one({'_id': ObjectId(rid)})
+    if not res:
+        return jsonify({'error': 'Not found'}), 404
+
+    result = {
+        'id': str(res['_id']),
+        'subject_code': res.get('subject_code'),
+        'title': res.get('title'),
+        'type': res.get('type'),
+        'description': res.get('description'),
+        'due_date': res.get('due_date'),
+    }
+    return jsonify(result)
+
+
 @bp.route('/resources/<rid>', methods=['PUT'])
 @jwt_required()
 def update_resource(rid):
