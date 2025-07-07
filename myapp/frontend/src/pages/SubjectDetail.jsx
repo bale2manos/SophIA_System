@@ -128,7 +128,7 @@ export default function SubjectDetail() {
       <ul>
         {resources.map((r) => {
           const showDue = r.due_date
-            ? ` (Due: ${new Date(r.due_date).toLocaleDateString()})`
+            ? ` (Due: ${new Date(r.due_date).toLocaleString()})`
             : '';
           const duePassed = r.due_date && new Date() > new Date(r.due_date);
           const currentSubmission = r.submissions && r.submissions[0];
