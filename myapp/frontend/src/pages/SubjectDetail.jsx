@@ -98,10 +98,20 @@ export default function SubjectDetail() {
           const showDue = r.due_date
             ? ` (Due: ${new Date(r.due_date).toLocaleString()})`
             : '';
+          const showCounts =
+            role === 'professor' && r.type === 'exercise' && r.submissions_count != null;
           return (
             <li key={r.id} style={{ marginBottom: '8px' }}>
               <Link to={`/resources/${r.id}`}>{r.title} ({r.type})</Link>
               {showDue}
+              {showCounts && (
+                <>
+                  {' '}- {r.submissions_count} submissions
+                  {r.has_ungraded && (
+                    <span className="text-red-600 ml-1">⚠️ pendientes</span>
+                  )}
+                </>
+              )}
             </li>
           );
         })}

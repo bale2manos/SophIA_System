@@ -47,18 +47,33 @@ def get_subject(code):
 @jwt_required()
 def list_resources(code):
     mongo = get_db()
+    claims = get_jwt()
+    role = claims.get('role')
+
     resources = mongo.db.resources.find(
         {'subject_code': code},
         {'_id': 1, 'title': 1, 'type': 1, 'due_date': 1}
-    )    
+    )
+
     data = []
     for r in resources:
-        data.append({
+        item = {
             'id': str(r['_id']),
             'title': r['title'],
             'type': r['type'],
             'due_date': r.get('due_date'),
-        })
+        }
+
+        if role == 'professor' and r['type'] == 'exercise':
+            count = mongo.db.submissions.count_documents({'resource_id': r['_id']})
+            pending = mongo.db.submissions.count_documents({
+                'resource_id': r['_id'],
+                'grade': None
+            })
+            item['submissions_count'] = count
+            item['has_ungraded'] = pending > 0
+
+        data.append(item)
 
     return jsonify(data)
 
