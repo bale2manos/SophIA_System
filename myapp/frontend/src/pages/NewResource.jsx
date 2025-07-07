@@ -8,6 +8,7 @@ export default function NewResource() {
   const [title, setTitle] = useState('');
   const [type, setType] = useState('practice');
   const [description, setDescription] = useState('');
+  // Stores the selected due date and time
   const [dueDate, setDueDate] = useState('');
 
 const handleSubmit = async (e) => {
@@ -44,7 +45,7 @@ const handleSubmit = async (e) => {
       </select>
       <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description" />
       <input
-        type="date"
+        type="datetime-local"
         value={dueDate}
         onChange={(e) => setDueDate(e.target.value)}
         className="w-full border p-2 rounded"
