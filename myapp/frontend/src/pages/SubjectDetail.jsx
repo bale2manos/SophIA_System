@@ -225,7 +225,7 @@ if (role === 'student' && r.type === 'exercise') {
       )}
 
       {/* Past due date si aplica */}
-      {duePassed && (
+      {duePassed && !currentSubmission && (
         <div className="mt-1 text-red-600">Past due date</div>
       )}
     </li>
