@@ -112,7 +112,19 @@ export default function SubjectDetail() {
                 <>
                   {' '}- {r.submissions_count} submissions
                   {r.has_ungraded && (
-                    <span className="text-red-600 ml-1">⚠️ entregas sin corregir</span>
+                    <>
+                      <span className="text-red-600 ml-1">⚠️ entregas sin corregir</span>
+                      <button
+                        onClick={() =>
+                          navigate(`/resources/${r.id}/review`, {
+                            state: { code, title: r.title },
+                          })
+                        }
+                        className="ml-2 px-2 py-1 bg-blue-500 text-white rounded"
+                      >
+                        Revisar
+                      </button>
+                    </>
                   )}
                 </>
               )}
