@@ -54,6 +54,8 @@ def add_messages(rid):
     data = request.get_json() or {}
     msgs = data.get('messages') or []
     processed = []
+    print("ME HA LLEGADO UN MENSAJE")
+    
     for m in msgs:
         ts = m.get('ts')
         if isinstance(ts, str):

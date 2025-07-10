@@ -35,7 +35,7 @@ export default function ChatPractice({ practiceId }) {
     setDraft('');
 
     if (timerRef.current) clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(flushMessages, 1000);
+    timerRef.current = setTimeout(flushMessages, 1500);
   };
 
   return (
