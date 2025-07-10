@@ -2,7 +2,10 @@ import React from 'react';
 
 export default function ChatInput({ draft, textareaRef, handleInput, handleKeyDown, handleSend }) {
   return (
-    <div className="flex items-end border-t px-2 py-1 flex-shrink-0 w-full bg-white absolute left-0" style={{ bottom: 0, height: '56px' }}>
+    <div
+      className="flex items-end border-t px-2 py-1 flex-shrink-0 w-full bg-white fixed left-0 right-0 z-10"
+      style={{ bottom: 0, height: '56px' }}
+    >
       <textarea
         ref={textareaRef}
         value={draft}
