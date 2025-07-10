@@ -270,6 +270,7 @@ def delete_submission(sid):
 @bp.route('/resources/<rid>/attachments', methods=['POST'])
 @jwt_required()
 def upload_attachment(rid):
+    """Upload one or multiple attachment files for a lecture"""
     err = _professor_required()
     if err:
         return err
@@ -280,22 +281,38 @@ def upload_attachment(rid):
         return jsonify({'error': 'Resource not found'}), 404
 
     attachments = res.get('attachments', [])
-    if len(attachments) >= 10:
-        return jsonify({'error': 'Maximum attachments reached'}), 400
 
-    file = request.files.get('file')
-    if not file:
+    # Accept both 'file' (single) and 'files' (multiple)
+    files = request.files.getlist('files')
+    if not files:
+        single = request.files.get('file')
+        if single:
+            files = [single]
+
+    if not files:
         return jsonify({'error': 'No file provided'}), 400
 
-    filename = secure_filename(file.filename)
-    relative = os.path.join(rid, filename)
-    full = os.path.join(current_app.config['UPLOAD_FOLDER'], relative)
-    os.makedirs(os.path.dirname(full), exist_ok=True)
-    file.save(full)
+    if len(attachments) + len(files) > 10:
+        return jsonify({'error': 'Maximum attachments reached'}), 400
 
-    mongo.db.resources.update_one({"_id": ObjectId(rid)}, {"$push": {"attachments": relative}})
+    saved = []
+    rel_paths = []
+    for f in files:
+        filename = secure_filename(f.filename)
+        relative = os.path.join(rid, filename)
+        full = os.path.join(current_app.config['UPLOAD_FOLDER'], relative)
+        os.makedirs(os.path.dirname(full), exist_ok=True)
+        f.save(full)
+        rel_paths.append(relative)
+        saved.append({'file_url': '/uploads/' + relative, 'filename': filename})
 
-    return jsonify({'file_url': '/uploads/' + relative, 'filename': filename})
+    if rel_paths:
+        mongo.db.resources.update_one(
+            {"_id": ObjectId(rid)},
+            {"$push": {"attachments": {"$each": rel_paths}}}
+        )
+
+    return jsonify(saved)
 
 
 @bp.route('/resources/<rid>/attachments/<fname>', methods=['DELETE'])
