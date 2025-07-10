@@ -96,10 +96,9 @@ export default function SubjectDetail() {
           text={`${resources.length}`}
         />
       </div>
-
-      <h3>Resources</h3>
-      <h3 className="text-xl mb-2">Agenda</h3>
+      <h3>Calendar</h3>
       <CalendarAgenda resources={resources} />
+      <h3>Resources</h3>
       <ul>
         {resources.map((r) => {
           const showDue = r.due_date
