@@ -81,6 +81,30 @@ def update_resource(rid):
     return jsonify({'success': True})
 
 
+@bp.route('/resources/<rid>/implementation_link', methods=['PUT'])
+@jwt_required()
+def set_practice_link(rid):
+    err = _professor_required()
+    if err:
+        return err
+
+    data = request.get_json() or {}
+    link = data.get('practice_external_url')
+
+    mongo = get_db()
+    res = mongo.db.resources.find_one({'_id': ObjectId(rid)})
+    if not res:
+        return jsonify({'error': 'Resource not found'}), 404
+    if res.get('type') != 'practice':
+        return jsonify({'error': 'Invalid resource type'}), 400
+
+    mongo.db.resources.update_one(
+        {'_id': ObjectId(rid)},
+        {'$set': {'practice_external_url': link}}
+    )
+    return jsonify({'success': True})
+
+
 @bp.route('/resources/<rid>', methods=['DELETE'])
 @jwt_required()
 def delete_resource(rid):

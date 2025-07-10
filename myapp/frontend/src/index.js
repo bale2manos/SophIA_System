@@ -16,6 +16,7 @@ import NewResource from './pages/NewResource';
 import PrivateRoute from './PrivateRoute';
 import ReviewSubmissions from './pages/ReviewSubmissions';
 import ResourceDetail from './pages/ResourceDetail';
+import PracticeChat from './pages/PracticeChat';
 
 function App() {
   return (
@@ -55,6 +56,15 @@ function App() {
           element={
             <PrivateRoute>
               <ResourceDetail />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/subjects/:code/practices/:id"
+          element={
+            <PrivateRoute>
+              <PracticeChat />
             </PrivateRoute>
           }
         />
