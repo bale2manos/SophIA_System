@@ -25,18 +25,32 @@ def start_practice(rid):
 
     doc = mongo.db.student_practices.find_one({'practice_id': ObjectId(rid), 'student_email': email})
     if not doc:
-        res = mongo.db.resources.find_one({'_id': ObjectId(rid)}, {'subject_code': 1})
+        res = mongo.db.resources.find_one({'_id': ObjectId(rid)})
+        subject_code = res.get('subject_code') if res else None
+        subject = mongo.db.subjects.find_one({'code': subject_code}) if subject_code else None
+        user = mongo.db.users.find_one({'email': email})
+
+        welcome_text = f"Hola {user.get('name', email)}, bienvenido a {res.get('title', '')} de {subject.get('title', '')}. Tu primera tarea será saludar" if res and subject and user else None
+
+        initial_messages = []
+        if welcome_text:
+            initial_messages.append({
+                'text': welcome_text,
+                'ts': datetime.utcnow(),
+                'sender': 'sophia'
+            })
+
         practice = {
-            'subject_code': res.get('subject_code') if res else None,
+            'subject_code': subject_code,
             'practice_id': ObjectId(rid),
             'student_email': email,
             'started_at': datetime.utcnow(),
-            'messages': [],
+            'messages': initial_messages,
             'completed': False,
         }
         result = mongo.db.student_practices.insert_one(practice)
         doc_id = result.inserted_id
-        messages = []
+        messages = initial_messages
     else:
         doc_id = doc['_id']
         messages = doc.get('messages', [])
