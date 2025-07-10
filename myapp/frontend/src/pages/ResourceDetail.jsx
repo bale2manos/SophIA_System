@@ -172,7 +172,11 @@ export default function ResourceDetail() {
       )}
 
       {role === 'student' && resource.type === 'practice' && (
-        <button disabled={duePassed} onClick={() => alert('TODO')} style={{ marginTop: '8px' }}>
+        <button
+          disabled={duePassed}
+          onClick={() => navigate(`/subjects/${resource.subject_code}/practices/${id}`)}
+          style={{ marginTop: '8px' }}
+        >
           Start
         </button>
       )}

@@ -18,6 +18,13 @@ def create_app():
     jwt.init_app(app)
     app.config['MONGO'] = mongo
 
+    # Ensure index for student practices chat
+    with app.app_context():
+        mongo.db.student_practices.create_index(
+            [('practice_id', 1), ('student_email', 1)],
+            unique=True
+        )
+
     upload_folder = os.path.join(os.path.dirname(__file__), 'uploads')
     os.makedirs(upload_folder, exist_ok=True)
     app.config['UPLOAD_FOLDER'] = upload_folder
