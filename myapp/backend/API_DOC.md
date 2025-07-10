@@ -63,6 +63,15 @@ Permite a un profesor eliminar un recurso.
 
 - **Auth:** JWT requerido (rol: profesor)
 
+### `POST /resources/<rid>/attachments`
+
+Sube uno o varios archivos adjuntos para un recurso tipo "lecture".
+
+- **Auth:** JWT requerido (rol: profesor)
+- **FormData:** `files` (puede incluir varios archivos)
+- **Response:** Lista de objetos `{ "file_url": str, "filename": str }`
+- **Límite:** Máximo 10 archivos por recurso.
+
 ---
 
 ## Entregas (Submissions)

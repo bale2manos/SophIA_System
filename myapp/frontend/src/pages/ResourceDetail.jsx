@@ -98,13 +98,14 @@ export default function ResourceDetail() {
           {role === 'professor' && (
             <input
               type="file"
+              multiple
               onChange={async (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
+                const files = Array.from(e.target.files);
+                if (!files.length) return;
                 const fd = new FormData();
-                fd.append('file', file);
+                files.forEach((f) => fd.append('files', f));
                 const res = await api.post(`/resources/${id}/attachments`, fd);
-                setAttachments((prev) => [...prev, res.data]);
+                setAttachments((prev) => [...prev, ...(res.data || [])]);
                 e.target.value = '';
               }}
               disabled={attachments.length >= 10}
