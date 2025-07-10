@@ -104,12 +104,21 @@ export default function SubjectDetail() {
           const showDue = r.due_date
             ? ` (Due: ${new Date(r.due_date).toLocaleString()})`
             : '';
+          const duePassed = r.due_date && new Date() > new Date(r.due_date);
           const showCounts =
             role === 'professor' && r.type === 'exercise' && r.submissions_count != null;
+          const showPendingSubmission =
+            role === 'student' &&
+            r.type === 'exercise' &&
+            !duePassed &&
+            (!r.submissions || r.submissions.length === 0);
           return (
             <li key={r.id} style={{ marginBottom: '8px' }}>
               <Link to={`/resources/${r.id}`}>{r.title} ({r.type})</Link>
               {showDue}
+              {showPendingSubmission && (
+                <span className="text-red-600 ml-1">⚠️ submission pending</span>
+              )}
               {showCounts && (
                 <>
                   {' '}- {r.submissions_count} submissions
