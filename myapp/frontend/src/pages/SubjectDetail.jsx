@@ -12,6 +12,7 @@ export default function SubjectDetail() {
   const { code } = useParams();
   const [subject, setSubject] = useState(null);
   const [resources, setResources] = useState([]);
+  const [avgGrade, setAvgGrade] = useState(null);
   const navigate = useNavigate();
 
   // Bucle que trae recursos + sus entregas del alumno
@@ -46,6 +47,33 @@ export default function SubjectDetail() {
 
       // 3) Actualiza el estado con recursos enriquecidos
       setResources(resourcesWithSubs);
+
+      // — Calcular nota media —
+      const exercises = resourcesWithSubs.filter((r) => r.type === 'exercise');
+      const allSubsArrays = await Promise.all(
+        exercises.map((r) =>
+          api.get(`/resources/${r.id}/submissions`).then((res) => res.data)
+        )
+      );
+      const allSubs = allSubsArrays.flat();
+      const graded = allSubs.filter((s) => s.grade != null);
+
+      let average = null;
+      if (graded.length > 0) {
+        if (role === 'professor') {
+          const sum = graded.reduce((a, s) => a + Number(s.grade), 0);
+          average = sum / graded.length;
+        } else {
+          const me = localStorage.getItem('email');
+          const mySubs = graded.filter((s) => s.student_email === me);
+          if (mySubs.length > 0) {
+            const sum = mySubs.reduce((a, s) => a + Number(s.grade), 0);
+            average = sum / mySubs.length;
+          }
+        }
+      }
+      setAvgGrade(average);
+      // — Fin cálculo —
     } catch (err) {
       console.error('Error trayendo recursos:', err);
     }
@@ -89,13 +117,18 @@ export default function SubjectDetail() {
       </h2>
       <p>{subject.description}</p>
 
-      <div style={{ width: 80, marginBottom: '24px' }}>
-        <CircularProgressbar
-          value={resources.length}
-          maxValue={resources.length || 1}
-          text={`${resources.length}`}
-        />
-      </div>
+      <h3 className="text-xl mb-2">Nota media</h3>
+      {avgGrade != null ? (
+        <div style={{ width: 80, marginBottom: '16px' }}>
+          <CircularProgressbar
+            value={avgGrade}
+            maxValue={10}
+            text={avgGrade.toFixed(1)}
+          />
+        </div>
+      ) : (
+        <p className="text-gray-500">Sin entregas calificadas</p>
+      )}
       <h3>Calendar</h3>
       <CalendarAgenda resources={resources} />
       <h3>Resources</h3>
