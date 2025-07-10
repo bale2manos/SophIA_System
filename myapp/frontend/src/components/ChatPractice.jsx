@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import dayjs from 'dayjs';
 import api from '../api';
+import sophiaImg from '../icons/sophia.png';
+import userImg from '../icons/user_generic.png';
 
 export default function ChatPractice({ practiceId }) {
   const [messages, setMessages] = useState([]);
@@ -93,18 +95,20 @@ export default function ChatPractice({ practiceId }) {
       <div className="flex flex-col gap-3 overflow-y-auto grow px-4 py-2" ref={scrollRef}>
         {messages.map((m, i) => {
           const mine = m.sender === 'student';
+          const avatarSrc = m.sender === 'sophia' ? sophiaImg : userImg;
           return (
             <div key={i} className={`flex ${mine ? 'justify-end' : 'justify-start'} w-full`}>
               <div className={`flex ${mine ? 'flex-row-reverse' : 'flex-row'} items-start max-w-[80%]`}>
                 {/* avatar */}
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${mine ? 'bg-purple-500 text-white ml-2' : 'bg-blue-500 text-white mr-2'}`}>
-                  {mine ? 'Y' : 'S'}
-                </div>
-                <div className={`flex flex-col ${mine ? 'items-end' : 'items-start'} min-w-0 flex-1`}>
-                  <div className={`${mine ? 'bg-blue-600 text-white' : 'bg-gray-100'} rounded-xl ${mine ? 'rounded-tr-none' : 'rounded-tl-none'} px-4 py-2 break-words`}>
-                    {m.text}
-                  </div>
-                  <span className="text-xs text-gray-400 mt-1">{dayjs(m.ts).format('HH:mm')}</span>
+                <img
+                  src={avatarSrc}
+                  alt={m.sender === 'sophia' ? 'SophIA avatar' : 'User avatar'}
+                  className="w-6 h-6 rounded-full"
+                />
+              </div>
+              <div className={`ml-2 flex flex-col items-${mine ? 'end' : 'start'}`}>
+                <div className={`${mine ? 'bg-blue-600 text-white' : 'bg-gray-100'} rounded-xl ${mine ? 'rounded-tr-none' : 'rounded-tl-none'} px-4 py-2 max-w-[70%]`}>
+                  {m.text}
                 </div>
               </div>
             </div>
