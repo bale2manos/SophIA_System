@@ -8,6 +8,17 @@ from flask import current_app
 from .resources import _student_required
 
 
+def serialize_msg(msg):
+    ts = msg.get("ts")
+    # Si viene como datetime lo transformamos en ISO
+    if isinstance(ts, datetime):
+        ts = ts.isoformat() + "Z"
+    return {
+        "text":        msg["text"],
+        "ts":          ts,
+        "sender":      msg["sender"],
+    }
+
 def get_db():
     return current_app.config['MONGO']
 
@@ -30,6 +41,7 @@ def start_practice(rid):
         subject = mongo.db.subjects.find_one({'code': subject_code}) if subject_code else None
         user = mongo.db.users.find_one({'email': email})
 
+        # TODO Este texto debería venir de la BBDD o ser configurable
         welcome_text = f"Hola {user.get('name', email)}, bienvenido a {res.get('title', '')} de {subject.get('title', '')}. Tu primera tarea será saludar" if res and subject and user else None
 
         initial_messages = []
@@ -54,8 +66,10 @@ def start_practice(rid):
     else:
         doc_id = doc['_id']
         messages = doc.get('messages', [])
+    
+    output_messages = [serialize_msg(m) for m in messages]
 
-    return jsonify({'practice_doc_id': str(doc_id), 'messages': messages})
+    return jsonify({'practice_doc_id': str(doc_id), 'messages': output_messages})
 
 
 @bp.route('/practices/<rid>/messages', methods=['POST'])

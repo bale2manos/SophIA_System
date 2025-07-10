@@ -89,15 +89,21 @@ export default function ChatPractice({ practiceId }) {
         })}
       </div>
 
-      <form onSubmit={handleSend} className="flex items-center border-t px-2 py-1">
+      <div className="flex items-center border-t px-2 py-1">
         <input
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           className="flex-grow p-2 outline-none"
           placeholder="Type a message"
         />
-        <button type="submit" className="p-2 text-blue-600">▶️</button>
-      </form>
+        <button
+          type="button"
+          onClick={handleSend}
+          className="p-2 text-blue-600"
+        >
+          ▶️
+        </button>
+      </div>
     </div>
   );
 }
