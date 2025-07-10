@@ -181,6 +181,23 @@ export default function ResourceDetail() {
         </button>
       )}
 
+      {role === 'professor' && resource.type === 'practice' && (
+        <button
+          onClick={async () => {
+            const url = prompt('Implementation URL');
+            if (url) {
+              await api.put(`/resources/${id}/implementation_link`, {
+                practice_external_url: url,
+              });
+            }
+          }}
+          className="ml-2 px-2 py-1 bg-blue-500 text-white rounded"
+          style={{ marginTop: '8px' }}
+        >
+          Implement
+        </button>
+      )}
+
       {/* File info */}
       {submission && (
         <div
