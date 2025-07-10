@@ -5,6 +5,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import api from '../api';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
+import CalendarAgenda from '../components/CalendarAgenda';
 
 
 export default function SubjectDetail() {
@@ -97,6 +98,8 @@ export default function SubjectDetail() {
       </div>
 
       <h3>Resources</h3>
+      <h3 className="text-xl mb-2">Agenda</h3>
+      <CalendarAgenda resources={resources} />
       <ul>
         {resources.map((r) => {
           const showDue = r.due_date
