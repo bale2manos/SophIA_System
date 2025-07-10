@@ -9,6 +9,7 @@ export default function ChatPractice({ practiceId }) {
   const pendingRef = useRef([]);
   const timerRef = useRef(null);
   const scrollRef = useRef(null);
+  const bottomRef = useRef(null);
   const textareaRef = useRef(null);
 
   useEffect(() => {
@@ -46,8 +47,8 @@ export default function ChatPractice({ practiceId }) {
   }, [practiceId]);
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    if (bottomRef.current) {
+      bottomRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages]);
 
@@ -91,7 +92,7 @@ export default function ChatPractice({ practiceId }) {
 
   return (
     <div className="flex flex-col h-full border-t border-l border-r rounded-t relative">
-      <ChatMessages messages={messages} scrollRef={scrollRef} />
+      <ChatMessages messages={messages} scrollRef={scrollRef} bottomRef={bottomRef} />
       <ChatInput
         draft={draft}
         textareaRef={textareaRef}
