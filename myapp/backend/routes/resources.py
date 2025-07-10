@@ -43,6 +43,13 @@ def get_resource(rid):
         'type': res.get('type'),
         'description': res.get('description'),
         'due_date': res.get('due_date'),
+        'attachments': [
+            {
+                'file_url': '/uploads/' + p,
+                'filename': os.path.basename(p),
+            }
+            for p in res.get('attachments', [])
+        ],
     }
     return jsonify(result)
 
@@ -258,3 +265,53 @@ def delete_submission(sid):
 
     # 5) Devuelve éxito
     return jsonify({'msg': 'Submission deleted'}), 200
+
+
+@bp.route('/resources/<rid>/attachments', methods=['POST'])
+@jwt_required()
+def upload_attachment(rid):
+    err = _professor_required()
+    if err:
+        return err
+
+    mongo = get_db()
+    res = mongo.db.resources.find_one({'_id': ObjectId(rid)})
+    if not res:
+        return jsonify({'error': 'Resource not found'}), 404
+
+    attachments = res.get('attachments', [])
+    if len(attachments) >= 10:
+        return jsonify({'error': 'Maximum attachments reached'}), 400
+
+    file = request.files.get('file')
+    if not file:
+        return jsonify({'error': 'No file provided'}), 400
+
+    filename = secure_filename(file.filename)
+    relative = os.path.join(rid, filename)
+    full = os.path.join(current_app.config['UPLOAD_FOLDER'], relative)
+    os.makedirs(os.path.dirname(full), exist_ok=True)
+    file.save(full)
+
+    mongo.db.resources.update_one({"_id": ObjectId(rid)}, {"$push": {"attachments": relative}})
+
+    return jsonify({'file_url': '/uploads/' + relative, 'filename': filename})
+
+
+@bp.route('/resources/<rid>/attachments/<fname>', methods=['DELETE'])
+@jwt_required()
+def delete_attachment(rid, fname):
+    err = _professor_required()
+    if err:
+        return err
+
+    fname = secure_filename(fname)
+    relative = os.path.join(rid, fname)
+    mongo = get_db()
+    mongo.db.resources.update_one({'_id': ObjectId(rid)}, {'$pull': {'attachments': relative}})
+
+    path = os.path.join(current_app.config['UPLOAD_FOLDER'], relative)
+    if os.path.exists(path):
+        os.remove(path)
+
+    return jsonify({'success': True})

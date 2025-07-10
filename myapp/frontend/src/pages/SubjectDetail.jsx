@@ -114,7 +114,12 @@ export default function SubjectDetail() {
             (!r.submissions || r.submissions.length === 0);
           return (
             <li key={r.id} style={{ marginBottom: '8px' }}>
-              <Link to={`/resources/${r.id}`}>{r.title} ({r.type})</Link>
+              <Link
+                to={`/resources/${r.id}`}
+                state={{ subjectTitle: subject.title }}
+              >
+                {r.title} ({r.type})
+              </Link>
               {showDue}
               {showPendingSubmission && (
                 <span className="text-red-600 ml-1">⚠️ submission pending</span>
