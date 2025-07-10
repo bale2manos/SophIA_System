@@ -49,29 +49,31 @@ export default function SubjectDetail() {
       setResources(resourcesWithSubs);
 
       // — Calcular nota media —
-      const exercises = resourcesWithSubs.filter((r) => r.type === 'exercise');
-      const allSubsArrays = await Promise.all(
-        exercises.map((r) =>
-          api.get(`/resources/${r.id}/submissions`).then((res) => res.data)
-        )
-      );
-      const allSubs = allSubsArrays.flat();
-      const graded = allSubs.filter((s) => s.grade != null);
-
       let average = null;
-      if (graded.length > 0) {
-        if (role === 'professor') {
+      const exercises = resourcesWithSubs.filter((r) => r.type === 'exercise');
+
+      if (role === 'professor') {
+        const allSubsArrays = await Promise.all(
+          exercises.map((r) =>
+            api.get(`/resources/${r.id}/submissions`).then((res) => res.data)
+          )
+        );
+        const allSubs = allSubsArrays.flat();
+        const graded = allSubs.filter((s) => s.grade != null);
+        if (graded.length > 0) {
           const sum = graded.reduce((a, s) => a + Number(s.grade), 0);
           average = sum / graded.length;
-        } else {
-          const me = localStorage.getItem('email');
-          const mySubs = graded.filter((s) => s.student_email === me);
-          if (mySubs.length > 0) {
-            const sum = mySubs.reduce((a, s) => a + Number(s.grade), 0);
-            average = sum / mySubs.length;
-          }
+        }
+      } else {
+        const myGraded = exercises
+          .flatMap((r) => r.submissions || [])
+          .filter((s) => s && s.grade != null);
+        if (myGraded.length > 0) {
+          const sum = myGraded.reduce((a, s) => a + Number(s.grade), 0);
+          average = sum / myGraded.length;
         }
       }
+
       setAvgGrade(average);
       // — Fin cálculo —
     } catch (err) {
