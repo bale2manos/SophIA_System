@@ -180,29 +180,7 @@ export default function SubjectDetail() {
                   )}
                 </>
               )}
-              {role === 'student' && isPractice && (
-                <button
-                  onClick={() => navigate(`/subjects/${code}/practices/${r.id}`)}
-                  className="ml-2 px-2 py-1 bg-green-500 text-white rounded"
-                >
-                  Start
-                </button>
-              )}
-              {role === 'professor' && isPractice && (
-                <button
-                  onClick={async () => {
-                    const url = prompt('Implementation URL');
-                    if (url) {
-                      await api.put(`/resources/${r.id}/implementation_link`, {
-                        practice_external_url: url,
-                      });
-                    }
-                  }}
-                  className="ml-2 px-2 py-1 bg-blue-500 text-white rounded"
-                >
-                  Implement
-                </button>
-              )}
+              {/* Practice actions moved to ResourceDetail */}
             </li>
           );
         })}
