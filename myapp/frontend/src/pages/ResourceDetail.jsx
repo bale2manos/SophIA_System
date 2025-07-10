@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import api from '../api';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import api, { BACKEND_URL } from '../api';
 import PdfIcon from '../icons/PdfIcon';
 import ImageIcon from '../icons/ImageIcon';
 import WordIcon from '../icons/WordIcon';
@@ -38,8 +38,11 @@ function UploadButton({ resourceId, label = 'Submit', disabled = false, onUpload
 export default function ResourceDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [resource, setResource] = useState(null);
   const [submission, setSubmission] = useState(null);
+  const [subjectTitle, setSubjectTitle] = useState(location.state?.subjectTitle || '');
+  const [attachments, setAttachments] = useState([]);
 
   const fetchSubmission = async () => {
     try {
@@ -51,8 +54,18 @@ export default function ResourceDetail() {
   };
 
   useEffect(() => {
-    api.get(`/resources/${id}`)
-      .then((res) => setResource(res.data))
+    api
+      .get(`/resources/${id}`)
+      .then((res) => {
+        setResource(res.data);
+        setAttachments(res.data.attachments || []);
+        if (!subjectTitle) {
+          api
+            .get(`/subjects/${res.data.subject_code}`)
+            .then((s) => setSubjectTitle(s.data.title))
+            .catch(console.error);
+        }
+      })
       .catch(console.error);
     fetchSubmission();
   }, [id]);
@@ -68,7 +81,7 @@ export default function ResourceDetail() {
         onClick={() => navigate(`/subjects/${resource.subject_code}`)}
         style={{ marginBottom: '16px' }}
       >
-        ← Back to Subject
+        ← Back to {subjectTitle || 'Subject'}
       </button>
 
       <h2>{resource.title}</h2>
@@ -78,6 +91,50 @@ export default function ResourceDetail() {
       )}
       {submission && submission.grade != null && (
         <p>Grade: {submission.grade}</p>
+      )}
+
+      {resource.type === 'lecture' && (
+        <div style={{ marginTop: '16px' }}>
+          {role === 'professor' && (
+            <input
+              type="file"
+              onChange={async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const fd = new FormData();
+                fd.append('file', file);
+                const res = await api.post(`/resources/${id}/attachments`, fd);
+                setAttachments((prev) => [...prev, res.data]);
+                e.target.value = '';
+              }}
+              disabled={attachments.length >= 10}
+            />
+          )}
+          <ul>
+            {attachments.map((a) => (
+              <li key={a.filename} style={{ marginTop: '4px' }}>
+                <a
+                  href={`${BACKEND_URL}${a.file_url}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {a.filename}
+                </a>
+                {role === 'professor' && (
+                  <button
+                    onClick={async () => {
+                      await api.delete(`/resources/${id}/attachments/${a.filename}`);
+                      setAttachments((prev) => prev.filter((x) => x.filename !== a.filename));
+                    }}
+                    style={{ marginLeft: '4px' }}
+                  >
+                    X
+                  </button>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
 
       {/* Student actions */}
