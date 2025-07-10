@@ -90,7 +90,7 @@ export default function ChatPractice({ practiceId }) {
   };
 
   return (
-    <div className="flex flex-col h-full border rounded relative">
+    <div className="flex flex-col h-full border-t border-l border-r rounded-t relative">
       <ChatMessages messages={messages} scrollRef={scrollRef} />
       <ChatInput
         draft={draft}

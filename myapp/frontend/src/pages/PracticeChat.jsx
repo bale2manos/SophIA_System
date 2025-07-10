@@ -6,7 +6,7 @@ export default function PracticeChat() {
   const { code, id } = useParams();
   const navigate = useNavigate();
   return (
-    <div className="h-screen flex flex-col p-4">
+    <div className="h-screen flex flex-col p-4 overflow-hidden">
       <button
         onClick={() => navigate(`/subjects/${code}`)}
         className="mb-4 px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 flex-shrink-0"
