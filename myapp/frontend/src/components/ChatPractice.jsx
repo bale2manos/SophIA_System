@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import dayjs from 'dayjs';
 import api from '../api';
 import sophiaImg from '../icons/sophia.png';
-import userImg from '../icons/user_generic.png';
 
 export default function ChatPractice({ practiceId }) {
   const [messages, setMessages] = useState([]);
@@ -91,24 +90,27 @@ export default function ChatPractice({ practiceId }) {
   };
 
   return (
-    <div className="flex flex-col h-full border rounded">
-      <div className="flex flex-col gap-3 overflow-y-auto grow px-4 py-2" ref={scrollRef}>
+    <div className="flex flex-col h-full border rounded relative">
+      <div className="flex flex-col gap-3 overflow-y-auto flex-1 min-h-0 px-4 py-2" ref={scrollRef} style={{ marginBottom: '56px' }}>
         {messages.map((m, i) => {
           const mine = m.sender === 'student';
-          const avatarSrc = m.sender === 'sophia' ? sophiaImg : userImg;
           return (
             <div key={i} className={`flex ${mine ? 'justify-end' : 'justify-start'} w-full`}>
               <div className={`flex ${mine ? 'flex-row-reverse' : 'flex-row'} items-start max-w-[80%]`}>
-                {/* avatar */}
-                <img
-                  src={avatarSrc}
-                  alt={m.sender === 'sophia' ? 'SophIA avatar' : 'User avatar'}
-                  className="w-6 h-6 rounded-full"
-                />
-              </div>
-              <div className={`ml-2 flex flex-col items-${mine ? 'end' : 'start'}`}>
-                <div className={`${mine ? 'bg-blue-600 text-white' : 'bg-gray-100'} rounded-xl ${mine ? 'rounded-tr-none' : 'rounded-tl-none'} px-4 py-2 max-w-[70%]`}>
-                  {m.text}
+                {/* avatar solo para sophia */}
+                {!mine && (
+                  <img
+                    src={sophiaImg}
+                    alt="SophIA avatar"
+                    className="w-3 h-3 rounded-full flex-shrink-0 mr-1"
+                    style={{ width: '5vh', height: '5vh' }}
+                  />
+                )}
+                <div className={`flex flex-col items-${mine ? 'end' : 'start'}`}>
+                  <div className={`${mine ? 'bg-blue-600 text-white' : 'bg-gray-100'} rounded-xl ${mine ? 'rounded-tr-none' : 'rounded-tl-none'} px-4 py-2 break-words`}>
+                    {m.text}
+                  </div>
+                  <span className="text-xs text-gray-400 mt-1">{dayjs(m.ts).format('HH:mm')}</span>
                 </div>
               </div>
             </div>
@@ -116,7 +118,7 @@ export default function ChatPractice({ practiceId }) {
         })}
       </div>
 
-      <div className="flex items-end border-t px-2 py-1">
+      <div className="flex items-end border-t px-2 py-1 flex-shrink-0 w-full bg-white absolute left-0" style={{ bottom: 0, height: '56px' }}>
         <textarea
           ref={textareaRef}
           value={draft}
@@ -125,6 +127,7 @@ export default function ChatPractice({ practiceId }) {
           className="flex-grow p-2 outline-none resize-none overflow-hidden"
           placeholder="Type a message"
           rows="1"
+          style={{ maxHeight: '40px' }}
         />
         <button
           type="button"
