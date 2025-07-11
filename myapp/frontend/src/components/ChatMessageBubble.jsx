@@ -1,5 +1,4 @@
 import React from 'react';
-import dayjs from 'dayjs';
 import sophiaImg from '../icons/sophia.png';
 import userImg from '../icons/user_generic.png';
 
@@ -20,7 +19,6 @@ export default function ChatMessageBubble({ message }) {
           <div className={`${mine ? 'bg-blue-600 text-white' : 'bg-gray-100'} rounded-xl ${mine ? 'rounded-tr-none' : 'rounded-tl-none'} px-4 py-2 break-words`}>
             {message.text}
           </div>
-          <span className="text-xs text-gray-400 mt-1">{dayjs(message.ts).format('HH:mm')}</span>
         </div>
       </div>
     </div>
