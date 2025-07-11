@@ -8,6 +8,7 @@ export default function Dashboard() {
   const [subjects, setSubjects] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
+  const role = localStorage.getItem('role');
 
   const logout = () => {
     localStorage.clear();
@@ -46,6 +47,14 @@ export default function Dashboard() {
               </h3>
               <p>{s.description}</p>
               <Link to={`/subjects/${s.code}`}>View Details</Link>
+              {role === 'professor' && (
+                <Link
+                  to={`/subjects/${s.code}/resources/new`}
+                  style={{ marginLeft: '8px' }}
+                >
+                  ➕
+                </Link>
+              )}
             </div>
           ))
         )}
