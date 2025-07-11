@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   // Hide navbar on login page
   if (location.pathname === '/login') return null;
@@ -38,9 +39,15 @@ export default function Navbar() {
     }
   }
 
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate('/login', { replace: true });
+    setMenuOpen(false);
+  };
+
   return (
     <header
-      className="flex items-center justify-between px-4 py-2 shadow-md sticky top-0 z-50"
+      className="relative flex items-center justify-between px-4 py-2 shadow-md sticky top-0 z-50"
       style={{ backgroundColor: '#f5f5dc' }}
     >
       {/* Breadcrumb */}
@@ -60,9 +67,30 @@ export default function Navbar() {
       </nav>
 
       {/* Logo */}
-      <button onClick={() => navigate('/dashboard')} className="font-bold text-xl text-blue-600">
-        Sophia
-      </button>
+      <div className="relative">
+        <button onClick={() => setMenuOpen((v) => !v)} className="font-bold text-xl text-blue-600">
+          Sophia
+        </button>
+        {menuOpen && (
+          <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow-md z-50">
+            <button
+              onClick={() => {
+                setMenuOpen(false);
+                navigate('/dashboard');
+              }}
+              className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+            >
+              Dashboard
+            </button>
+            <button
+              onClick={handleLogout}
+              className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+            >
+              Logout
+            </button>
+          </div>
+        )}
+      </div>
     </header>
   );
 }
