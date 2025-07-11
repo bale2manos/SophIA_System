@@ -27,7 +27,7 @@ export default function ResourceForm({ type }) {
       [...files].forEach((f) => fd.append('files', f));
       await api.post(`/resources/${resourceId}/attachments`, fd);
     }
-    navigate(-1);
+    navigate(`/subjects/${code}`);
   };
 
   return (
