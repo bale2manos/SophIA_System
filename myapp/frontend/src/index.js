@@ -12,7 +12,10 @@ import 'react-circular-progressbar/dist/styles.css';       // CircularProgressba
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import SubjectDetail from './pages/SubjectDetail';
-import NewResource from './pages/NewResource';
+import NewResourceSelector from './pages/NewResourceSelector';
+import NewLecture from './pages/NewLecture';
+import NewPractice from './pages/NewPractice';
+import NewExercise from './pages/NewExercise';
 import PrivateRoute from './PrivateRoute';
 import ReviewSubmissions from './pages/ReviewSubmissions';
 import ResourceDetail from './pages/ResourceDetail';
@@ -28,7 +31,10 @@ function App() {
         <Route element={<PrivateRoute><AppLayout /></PrivateRoute>}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/subjects/:code" element={<SubjectDetail />} />
-          <Route path="/subjects/:code/resources/new" element={<NewResource />} />
+          <Route path="/subjects/:code/resources/new" element={<NewResourceSelector />} />
+          <Route path="/subjects/:code/resources/new/lecture" element={<NewLecture />} />
+          <Route path="/subjects/:code/resources/new/practice" element={<NewPractice />} />
+          <Route path="/subjects/:code/resources/new/exercise" element={<NewExercise />} />
           <Route path="/resources/:id" element={<ResourceDetail />} />
           <Route path="/subjects/:code/practices/:id" element={<PracticeChat />} />
           <Route path="/resources/:id/review" element={<ReviewSubmissions />} />
