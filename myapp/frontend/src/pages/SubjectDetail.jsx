@@ -26,6 +26,8 @@ export default function SubjectDetail() {
       // 2) Para cada recurso, si soy alumno, intenta traer solo MI submission
       const resourcesWithSubs = await Promise.all(
         rawResources.map(async (r) => {
+          localStorage.setItem(`res_title_${r.id}`, r.title);
+          localStorage.setItem(`res_subject_${r.id}`, code);
           let submissions = [];
           if (role === 'student') {
             try {
@@ -88,6 +90,7 @@ export default function SubjectDetail() {
       .get(`/subjects/${code}`)
       .then(({ data }) => {
         if (isMounted) setSubject(data);
+        localStorage.setItem(`subj_title_${data.code}`, data.title);
       })
       .catch(console.error);
 
@@ -106,13 +109,6 @@ export default function SubjectDetail() {
 
   return (
     <div>
-      {/* Back button */}
-      <button
-        onClick={() => navigate('/dashboard', { replace: true })}
-        style={{ marginBottom: '16px' }}
-      >
-        ← Back to Dashboard
-      </button>
 
       <h2>
         {subject.code} - {subject.title}

@@ -19,6 +19,9 @@ export default function Dashboard() {
     let isMounted = true;
     api.get('/subjects').then((res) => {
       if (isMounted) setSubjects(res.data);
+      res.data.forEach((s) => {
+        localStorage.setItem(`subj_title_${s.code}`, s.title);
+      });
     });
     return () => {
       isMounted = false;

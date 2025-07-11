@@ -59,6 +59,8 @@ export default function ResourceDetail() {
       .then((res) => {
         setResource(res.data);
         setAttachments(res.data.attachments || []);
+        localStorage.setItem(`res_title_${res.data.id}`, res.data.title);
+        localStorage.setItem(`res_subject_${res.data.id}`, res.data.subject_code);
         if (!subjectTitle) {
           api
             .get(`/subjects/${res.data.subject_code}`)
@@ -77,12 +79,6 @@ export default function ResourceDetail() {
 
   return (
     <div>
-      <button
-        onClick={() => navigate(`/subjects/${resource.subject_code}`)}
-        style={{ marginBottom: '16px' }}
-      >
-        ← Back to {subjectTitle || 'Subject'}
-      </button>
 
       <h2>{resource.title}</h2>
       <p>{resource.description}</p>
