@@ -7,7 +7,7 @@ export default function ChatMessageBubble({ message }) {
   const avatarImg = mine ? userImg : sophiaImg;
   return (
     <div className={`flex ${mine ? 'justify-end' : 'justify-start'} w-full`}>
-      <div className={`flex ${mine ? 'flex-row-reverse' : 'flex-row'} items-start max-w-[40%]`}>
+      <div className={`flex ${mine ? 'flex-row-reverse' : 'flex-row'} items-start max-w-[45%]`}>
         {/* avatar */}
         <img
           src={avatarImg}
