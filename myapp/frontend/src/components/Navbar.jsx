@@ -39,7 +39,10 @@ export default function Navbar() {
   }
 
   return (
-    <header className="flex items-center justify-between px-4 py-2 shadow-md bg-white sticky top-0 z-50">
+    <header
+      className="flex items-center justify-between px-4 py-2 shadow-md sticky top-0 z-50"
+      style={{ backgroundColor: '#f5f5dc' }}
+    >
       {/* Breadcrumb */}
       <nav className="flex items-center space-x-2 text-sm">
         {crumbs.map((c, i) => (
