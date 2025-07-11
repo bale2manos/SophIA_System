@@ -78,11 +78,23 @@ export default function ChatPractice({ practiceId }) {
         onSubmit={handleSend}
         className="flex-none flex items-center gap-2 border-t px-4 py-2 bg-white"
       >
-        <input
+        <textarea
           value={draft}
-          onChange={(e) => setDraft(e.target.value)}
+          onChange={(e) => {
+            setDraft(e.target.value);
+            e.target.style.height = 'auto';
+            e.target.style.height = e.target.scrollHeight + 'px';
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              handleSend(e);
+            }
+          }}
           placeholder="Type a message"
-          className="flex-1 border rounded px-2 py-1"
+          className="flex-1 border rounded px-2 py-1 resize-none overflow-hidden"
+          rows={1}
+          style={{ minHeight: '2.25rem', maxHeight: '10rem' }}
         />
         <button
           type="submit"
