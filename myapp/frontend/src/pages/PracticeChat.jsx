@@ -20,10 +20,8 @@ export default function PracticeChat() {
       .catch(() => {});
   }, [id]);
   return (
-    <div className="flex flex-col h-full px-4">
-      <div className="flex-1 min-h-0">
-        <ChatPractice practiceId={id} />
-      </div>
+    <div className="p-4">
+      <ChatPractice practiceId={id} />
     </div>
   );
 }
