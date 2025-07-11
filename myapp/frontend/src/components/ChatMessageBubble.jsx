@@ -7,7 +7,7 @@ export default function ChatMessageBubble({ message }) {
   const avatarImg = mine ? userImg : sophiaImg;
   return (
     <div className={`flex ${mine ? 'justify-end' : 'justify-start'} w-full`}>
-      <div className={`flex ${mine ? 'flex-row-reverse' : 'flex-row'} items-start max-w-[80%]`}>
+      <div className={`flex ${mine ? 'flex-row-reverse' : 'flex-row'} items-start max-w-[40%]`}>
         {/* avatar */}
         <img
           src={avatarImg}
@@ -16,7 +16,10 @@ export default function ChatMessageBubble({ message }) {
           style={{ width: '5vh', height: '5vh' }}
         />
         <div className={`flex flex-col items-${mine ? 'end' : 'start'}`}>
-          <div className={`${mine ? 'bg-blue-600 text-white' : 'bg-gray-100'} rounded-xl ${mine ? 'rounded-tr-none' : 'rounded-tl-none'} px-4 py-2 break-words`}>
+          <div
+            className={`${mine ? 'bg-blue-600 text-white' : 'bg-gray-100'} rounded-xl ${mine ? 'rounded-tr-none' : 'rounded-tl-none'} px-4 py-2 break-words`}
+            style={{ whiteSpace: 'pre-wrap' }}
+          >
             {message.text}
           </div>
         </div>
