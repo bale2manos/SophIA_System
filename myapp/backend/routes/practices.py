@@ -99,3 +99,28 @@ def add_messages(rid):
         {'$push': {'messages': {'$each': processed}}}
     )
     return jsonify({'success': True})
+
+
+@bp.route('/practices/<rid>/reset', methods=['POST'])
+@jwt_required()
+def reset_practice(rid):
+    email = get_jwt_identity()
+    mongo = get_db()
+    doc = mongo.db.student_practices.find_one({
+        'practice_id': ObjectId(rid),
+        'student_email': email
+    })
+    if not doc:
+        return jsonify({'error': 'not started'}), 404
+
+    subj = mongo.db.subjects.find_one({'code': doc['subject_code']})
+    res = mongo.db.resources.find_one({'_id': ObjectId(rid)})
+    welcome = {
+        'text': f"Hola {email}, bienvenido a {res['title']} de {subj['title']}. Tu primera tarea será saludar",
+        'ts': datetime.utcnow(),
+        'sender': 'sophia'
+    }
+    mongo.db.student_practices.update_one({'_id': doc['_id']}, {
+        '$set': {'messages': [welcome]}
+    })
+    return jsonify({'ok': True})
