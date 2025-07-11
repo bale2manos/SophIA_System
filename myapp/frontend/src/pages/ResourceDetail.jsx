@@ -59,6 +59,7 @@ export default function ResourceDetail() {
       .then((res) => {
         setResource(res.data);
         setAttachments(res.data.attachments || []);
+        localStorage.setItem(`res_title_${res.data.id}`, res.data.title);
         if (!subjectTitle) {
           api
             .get(`/subjects/${res.data.subject_code}`)

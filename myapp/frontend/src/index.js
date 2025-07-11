@@ -17,6 +17,7 @@ import PrivateRoute from './PrivateRoute';
 import ReviewSubmissions from './pages/ReviewSubmissions';
 import ResourceDetail from './pages/ResourceDetail';
 import PracticeChat from './pages/PracticeChat';
+import AppLayout from './layouts/AppLayout';
 
 function App() {
   return (
@@ -24,59 +25,14 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
 
-        <Route
-          path="/dashboard"
-          element={
-            <PrivateRoute>
-              <Dashboard />
-            </PrivateRoute>
-          }
-        />
-
-        <Route
-          path="/subjects/:code"
-          element={
-            <PrivateRoute>
-              <SubjectDetail />
-            </PrivateRoute>
-          }
-        />
-
-        <Route
-          path="/subjects/:code/resources/new"
-          element={
-            <PrivateRoute>
-              <NewResource />
-            </PrivateRoute>
-          }
-        />
-
-        <Route
-          path="/resources/:id"
-          element={
-            <PrivateRoute>
-              <ResourceDetail />
-            </PrivateRoute>
-          }
-        />
-
-        <Route
-          path="/subjects/:code/practices/:id"
-          element={
-            <PrivateRoute>
-              <PracticeChat />
-            </PrivateRoute>
-          }
-        />
-
-        <Route
-          path="/resources/:id/review"
-          element={
-            <PrivateRoute>
-              <ReviewSubmissions />
-            </PrivateRoute>
-          }
-        />
+        <Route element={<PrivateRoute><AppLayout /></PrivateRoute>}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/subjects/:code" element={<SubjectDetail />} />
+          <Route path="/subjects/:code/resources/new" element={<NewResource />} />
+          <Route path="/resources/:id" element={<ResourceDetail />} />
+          <Route path="/subjects/:code/practices/:id" element={<PracticeChat />} />
+          <Route path="/resources/:id/review" element={<ReviewSubmissions />} />
+        </Route>
 
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
