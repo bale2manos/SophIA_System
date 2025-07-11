@@ -67,7 +67,7 @@ export default function Navbar() {
       </nav>
 
       {/* Logo */}
-      <div className="relative">
+      <div className="relative mr-4">
         <button onClick={() => setMenuOpen((v) => !v)} className="font-bold text-xl text-blue-600">
           Sophia
         </button>
