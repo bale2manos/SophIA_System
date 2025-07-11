@@ -20,7 +20,13 @@ export default function Navbar() {
       localStorage.getItem(`subj_title_${subjectCode}`) || subjectCode;
     crumbs.push({ text: subjectTitle, to: `/subjects/${subjectCode}` });
 
-    if (parts[2]) {
+    if (parts[2] === 'resources' && parts[3] === 'new') {
+      crumbs.push({ text: 'New Resource', to: `/subjects/${subjectCode}/resources/new` });
+      if (parts[4]) {
+        const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+        crumbs.push({ text: cap(parts[4]) });
+      }
+    } else if (parts[2]) {
       const resId = parts[2] === 'practices' ? parts[3] : parts[2];
       const resTitle =
         localStorage.getItem(`res_title_${resId}`) || 'Resource';
