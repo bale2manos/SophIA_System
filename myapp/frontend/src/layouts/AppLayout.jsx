@@ -4,11 +4,11 @@ import { Outlet } from 'react-router-dom';
 
 export default function AppLayout() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="h-screen flex flex-col">
       <Navbar />
-      <div className="flex-grow">
+      <main className="flex-1 overflow-auto">
         <Outlet />
-      </div>
+      </main>
     </div>
   );
 }
