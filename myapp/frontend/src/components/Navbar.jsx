@@ -1,3 +1,4 @@
+// src/components/Navbar.jsx
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
@@ -9,17 +10,20 @@ export default function Navbar() {
   // Hide navbar on login page
   if (location.pathname === '/login') return null;
 
+  // Build breadcrumb trail
   const parts = location.pathname.split('/').filter(Boolean);
   const crumbs = [{ text: 'Dashboard', to: '/dashboard' }];
 
   if (parts[0] === 'subjects' && parts[1]) {
     const subjectCode = parts[1];
-    const subjectTitle = localStorage.getItem(`subj_title_${subjectCode}`) || subjectCode;
+    const subjectTitle =
+      localStorage.getItem(`subj_title_${subjectCode}`) || subjectCode;
     crumbs.push({ text: subjectTitle, to: `/subjects/${subjectCode}` });
 
     if (parts[2]) {
       const resId = parts[2] === 'practices' ? parts[3] : parts[2];
-      const resTitle = localStorage.getItem(`res_title_${resId}`) || 'Resource';
+      const resTitle =
+        localStorage.getItem(`res_title_${resId}`) || 'Resource';
       crumbs.push({ text: resTitle, to: `/resources/${resId}` });
       if (parts[2] === 'practices') {
         crumbs.push({ text: 'Chat' });
@@ -29,10 +33,12 @@ export default function Navbar() {
     const resId = parts[1];
     const subjectCode = localStorage.getItem(`res_subject_${resId}`);
     if (subjectCode) {
-      const subjectTitle = localStorage.getItem(`subj_title_${subjectCode}`) || subjectCode;
+      const subjectTitle =
+        localStorage.getItem(`subj_title_${subjectCode}`) || subjectCode;
       crumbs.push({ text: subjectTitle, to: `/subjects/${subjectCode}` });
     }
-    const resTitle = localStorage.getItem(`res_title_${resId}`) || 'Resource';
+    const resTitle =
+      localStorage.getItem(`res_title_${resId}`) || 'Resource';
     crumbs.push({ text: resTitle, to: `/resources/${resId}` });
     if (parts[2] === 'review') {
       crumbs.push({ text: 'Review' });
@@ -61,18 +67,35 @@ export default function Navbar() {
                 {c.text}
               </Link>
             )}
-            {i < crumbs.length - 1 && <span className="text-gray-400">›</span>}
+            {i < crumbs.length - 1 && (
+              <span className="text-gray-400">›</span>
+            )}
           </React.Fragment>
         ))}
       </nav>
 
-      {/* Logo */}
-      <div className="relative mr-4">
-        <button onClick={() => setMenuOpen((v) => !v)} className="font-bold text-xl text-blue-600">
+      {/* Sophia button + dropdown */}
+      <div className="relative inline-block mr-[1vw]">
+        <button
+          onClick={() => setMenuOpen((v) => !v)}
+          className="font-bold text-xl text-blue-600"
+        >
           Sophia
         </button>
-        {menuOpen && (
-          <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow-md z-50">
+
+          {menuOpen && (
+            <div className="
+              absolute
+              top-full
+              mt-1
+              bg-white border rounded shadow-md z-50
+              right-0
+              w-48
+              origin-top-right
+              transform
+              -translate-x-1/3
+            ">
+
             <button
               onClick={() => {
                 setMenuOpen(false);
