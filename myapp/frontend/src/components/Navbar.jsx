@@ -19,7 +19,10 @@ export default function Navbar() {
     if (parts[2]) {
       const resId = parts[2] === 'practices' ? parts[3] : parts[2];
       const resTitle = localStorage.getItem(`res_title_${resId}`) || 'Resource';
-      crumbs.push({ text: resTitle });
+      crumbs.push({ text: resTitle, to: `/resources/${resId}` });
+      if (parts[2] === 'practices') {
+        crumbs.push({ text: 'Chat' });
+      }
     }
   } else if (parts[0] === 'resources' && parts[1]) {
     const resId = parts[1];
@@ -29,7 +32,10 @@ export default function Navbar() {
       crumbs.push({ text: subjectTitle, to: `/subjects/${subjectCode}` });
     }
     const resTitle = localStorage.getItem(`res_title_${resId}`) || 'Resource';
-    crumbs.push({ text: resTitle });
+    crumbs.push({ text: resTitle, to: `/resources/${resId}` });
+    if (parts[2] === 'review') {
+      crumbs.push({ text: 'Review' });
+    }
   }
 
   return (
@@ -38,12 +44,12 @@ export default function Navbar() {
       <nav className="flex items-center space-x-2 text-sm">
         {crumbs.map((c, i) => (
           <React.Fragment key={i}>
-            {c.to ? (
+            {i === crumbs.length - 1 || !c.to ? (
+              <span className="text-gray-600">{c.text}</span>
+            ) : (
               <Link to={c.to} className="text-blue-600 hover:underline">
                 {c.text}
               </Link>
-            ) : (
-              <span className="text-gray-600">{c.text}</span>
             )}
             {i < crumbs.length - 1 && <span className="text-gray-400">›</span>}
           </React.Fragment>

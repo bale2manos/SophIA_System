@@ -13,17 +13,39 @@ export default function ReviewSubmissions() {
   const code = location.state?.code;
   const titleFromState = location.state?.title;
 
+  const [subjectCode, setSubjectCode] = useState(code || '');
   const [subjectTitle, setSubjectTitle] = useState(titleFromState || '');
 
   const [subs, setSubs] = useState([]);
 
   useEffect(() => {
-    if (!titleFromState && code) {
-      api.get(`/subjects/${code}`).then((res) => {
+    api
+      .get(`/resources/${id}`)
+      .then((res) => {
+        localStorage.setItem(`res_title_${res.data.id}`, res.data.title);
+        localStorage.setItem(`res_subject_${res.data.id}`, res.data.subject_code);
+        if (!subjectCode) setSubjectCode(res.data.subject_code);
+        if (!subjectTitle) {
+          api
+            .get(`/subjects/${res.data.subject_code}`)
+            .then((s) => {
+              setSubjectTitle(s.data.title);
+              localStorage.setItem(`subj_title_${res.data.subject_code}`, s.data.title);
+            })
+            .catch(() => {});
+        }
+      })
+      .catch(() => {});
+  }, [id]);
+
+  useEffect(() => {
+    if (subjectCode && !subjectTitle) {
+      api.get(`/subjects/${subjectCode}`).then((res) => {
         setSubjectTitle(res.data.title);
+        localStorage.setItem(`subj_title_${subjectCode}`, res.data.title);
       });
     }
-  }, [code, titleFromState]);
+  }, [subjectCode, subjectTitle]);
 
   // Fetch submissions and remember original grades
   useEffect(() => {
@@ -48,7 +70,7 @@ export default function ReviewSubmissions() {
     <div className="p-4">
       {/* 1) Back to subject */}
       <button
-        onClick={() => navigate(`/subjects/${code}`)}
+        onClick={() => navigate(`/subjects/${subjectCode}`)}
         className="mb-4 px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
       >
         ← Volver a {subjectTitle}
