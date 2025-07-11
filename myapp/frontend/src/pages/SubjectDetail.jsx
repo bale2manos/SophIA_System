@@ -109,13 +109,6 @@ export default function SubjectDetail() {
 
   return (
     <div>
-      {/* Back button */}
-      <button
-        onClick={() => navigate('/dashboard', { replace: true })}
-        style={{ marginBottom: '16px' }}
-      >
-        ← Back to Dashboard
-      </button>
 
       <h2>
         {subject.code} - {subject.title}

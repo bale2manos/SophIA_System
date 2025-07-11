@@ -79,12 +79,6 @@ export default function ResourceDetail() {
 
   return (
     <div>
-      <button
-        onClick={() => navigate(`/subjects/${resource.subject_code}`)}
-        style={{ marginBottom: '16px' }}
-      >
-        ← Back to {subjectTitle || 'Subject'}
-      </button>
 
       <h2>{resource.title}</h2>
       <p>{resource.description}</p>

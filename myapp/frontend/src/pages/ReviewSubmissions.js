@@ -1,13 +1,12 @@
 // src/pages/ReviewSubmissions.jsx
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import api, { BACKEND_URL } from '../api';
 
 
 export default function ReviewSubmissions() {
   const { id } = useParams();
   const location = useLocation();
-  const navigate = useNavigate();
 
   // Si vienen por estado, úsalos; si no, haz fallback con params o fetch
   const code = location.state?.code;
@@ -68,13 +67,6 @@ export default function ReviewSubmissions() {
 
   return (
     <div className="p-4">
-      {/* 1) Back to subject */}
-      <button
-        onClick={() => navigate(`/subjects/${subjectCode}`)}
-        className="mb-4 px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
-      >
-        ← Volver a {subjectTitle}
-      </button>
 
       <h2 className="text-2xl mb-2">Revisar Entregas</h2>
 
