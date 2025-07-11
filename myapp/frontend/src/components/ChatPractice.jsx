@@ -68,7 +68,7 @@ export default function ChatPractice({ practiceId }) {
 
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-full flex flex-col">
       <div id="chat-scroll" className="flex-1 overflow-y-auto px-4 py-2">
         {messages.map((m, i) => (
           <ChatMessageBubble key={i} message={m} />

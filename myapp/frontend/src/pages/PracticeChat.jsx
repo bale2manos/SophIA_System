@@ -20,7 +20,7 @@ export default function PracticeChat() {
       .catch(() => {});
   }, [id]);
   return (
-    <div className="p-4">
+    <div className="h-full p-4">
       <ChatPractice practiceId={id} />
     </div>
   );
