@@ -27,6 +27,7 @@ export default function SubjectDetail() {
       const resourcesWithSubs = await Promise.all(
         rawResources.map(async (r) => {
           localStorage.setItem(`res_title_${r.id}`, r.title);
+          localStorage.setItem(`res_subject_${r.id}`, code);
           let submissions = [];
           if (role === 'student') {
             try {

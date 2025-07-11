@@ -60,6 +60,7 @@ export default function ResourceDetail() {
         setResource(res.data);
         setAttachments(res.data.attachments || []);
         localStorage.setItem(`res_title_${res.data.id}`, res.data.title);
+        localStorage.setItem(`res_subject_${res.data.id}`, res.data.subject_code);
         if (!subjectTitle) {
           api
             .get(`/subjects/${res.data.subject_code}`)

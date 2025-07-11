@@ -21,6 +21,15 @@ export default function Navbar() {
       const resTitle = localStorage.getItem(`res_title_${resId}`) || 'Resource';
       crumbs.push({ text: resTitle });
     }
+  } else if (parts[0] === 'resources' && parts[1]) {
+    const resId = parts[1];
+    const subjectCode = localStorage.getItem(`res_subject_${resId}`);
+    if (subjectCode) {
+      const subjectTitle = localStorage.getItem(`subj_title_${subjectCode}`) || subjectCode;
+      crumbs.push({ text: subjectTitle, to: `/subjects/${subjectCode}` });
+    }
+    const resTitle = localStorage.getItem(`res_title_${resId}`) || 'Resource';
+    crumbs.push({ text: resTitle });
   }
 
   return (
